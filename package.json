@@ -4,6 +4,7 @@
   "scripts": {
     "postinstall": "node install.js"
   },
+  "license": "MIT",
   "devDependencies": {
     "mv": "^2.1.1"
   }
