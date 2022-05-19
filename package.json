@@ -1,0 +1,10 @@
+{
+  "name": "browser-automation-guide",
+  "description": "Examples of different ways to automate a browser",
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "devDependencies": {
+    "mv": "^2.1.1"
+  }
+}
