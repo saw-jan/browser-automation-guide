@@ -11,6 +11,13 @@ const chromeDriver = path.join(
   'chromedriver'
 )
 
+const chromeExecutable = path.join(
+  path.dirname(__dirname),
+  'browsers',
+  'chrome',
+  'chrome'
+)
+
 ;(async function () {
   // chromedriver service
   const service = new chrome.ServiceBuilder(chromeDriver).setPort(4444).build()
@@ -24,7 +31,9 @@ const chromeDriver = path.join(
   // starts the server and creates a new session
   let driver = await new Builder()
     .forBrowser('chrome')
-    .setChromeOptions(new chrome.Options())
+    .setChromeOptions(
+      new chrome.Options().setChromeBinaryPath(chromeExecutable)
+    )
     .build()
 
   await driver.get('https://jankaritech.com')
