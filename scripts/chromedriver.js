@@ -3,16 +3,50 @@
  */
 const axios = require('axios')
 const assert = require('assert')
+const { spawn } = require('child_process')
+const path = require('path')
 
-let sessionId
+const PORT = 4444
+const CHROME_DRIVER_PATH = path.join(
+  path.dirname(__dirname),
+  'drivers',
+  'chromedriver'
+)
+const CHROME_EXECUTABLE_PATH = path.join(
+  path.dirname(__dirname),
+  'browsers',
+  'chrome',
+  'chrome'
+)
+const USER_DIR = path.join(
+  path.dirname(__dirname),
+  'browsers',
+  'data',
+  'chrome'
+)
+const ARGS = [`--port=${PORT}`]
+
+const fetch = axios.create({
+  baseURL: `http://localhost:${PORT}/session`,
+})
+
+let wdServer = null
+let sessionId = null
+
 ;(async function () {
   let PASSED = false
 
   try {
+    const USER_DIR = path.join(
+      path.dirname(__dirname),
+      'browsers',
+      'data',
+      'chrome'
+    )
     /**
      * create session
      */
-    sessionId = await createSession()
+    await createSession()
 
     /**
      * navigate to url
@@ -27,12 +61,14 @@ let sessionId
 
     PASSED = true
   } catch (e) {
-    // console.log(e)
+    console.log(e)
   } finally {
     /**
      * delete session
      */
-    await closeSession()
+    if (sessionId) {
+      await closeSession()
+    }
 
     if (PASSED) {
       console.info('[OK] Tests passed!')
@@ -44,51 +80,51 @@ let sessionId
 
 /**
  *
+ * Setup
  *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- * webdriver client
  */
-const fetch = axios.create({
-  baseURL: 'http://localhost:4444/session',
-})
 
-// APIs
-async function createSession() {
-  let sessionId
-  await fetch({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: {
-      capabilities: {
-        browserName: 'chrome',
-      },
-    },
+function startChromeDriver() {
+  wdServer = spawn(CHROME_DRIVER_PATH, ARGS, {
+    detached: true,
   })
-    .then(({ data }) => {
-      sessionId = data.value.sessionId
+}
+
+/**
+ *
+ * APIs
+ *
+ */
+async function createSession() {
+  startChromeDriver()
+
+  while (!sessionId) {
+    await fetch({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        capabilities: {
+          alwaysMatch: {
+            browserName: 'chrome',
+            'goog:chromeOptions': {
+              binary: CHROME_EXECUTABLE_PATH,
+              args: [`--user-data-dir=${USER_DIR}`],
+            },
+          },
+        },
+      },
     })
-    .catch((e) => {
-      throw new Error(e)
-    })
-  return sessionId
+      .then(({ data }) => {
+        sessionId = data.value.sessionId
+      })
+      .catch((e) => {
+        throw new Error(e)
+      })
+  }
+
+  return Promise.resolve()
 }
 
 async function navigateTo(url) {
@@ -126,4 +162,7 @@ async function closeSession() {
   }).catch((e) => {
     throw new Error(e)
   })
+
+  // close chromedriver server
+  process.kill(-wdServer.pid)
 }

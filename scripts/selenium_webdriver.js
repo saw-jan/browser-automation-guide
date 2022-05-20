@@ -10,7 +10,12 @@ const CHROME_DRIVER_PATH = path.join(
   'drivers',
   'chromedriver'
 )
-
+const USER_DIR = path.join(
+  path.dirname(__dirname),
+  'browsers',
+  'data',
+  'chrome'
+)
 const CHROME_EXECUTABLE_PATH = path.join(
   path.dirname(__dirname),
   'browsers',
@@ -34,7 +39,9 @@ const CHROME_EXECUTABLE_PATH = path.join(
   let driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(
-      new chrome.Options().setChromeBinaryPath(CHROME_EXECUTABLE_PATH)
+      new chrome.Options()
+        .setChromeBinaryPath(CHROME_EXECUTABLE_PATH)
+        .addArguments([`--user-data-dir=${USER_DIR}`])
     )
     .build()
 
