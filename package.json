@@ -2,11 +2,16 @@
   "name": "browser-automation-guide",
   "description": "Examples of different ways to automate a browser",
   "scripts": {
-    "postinstall": "node install.js"
+    "install:browser": "node install.js"
   },
   "license": "MIT",
+  "packageManager": "yarn@3.2.1",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "selenium-webdriver": "^4.1.2",
+    "ws": "^8.6.0"
+  },
   "devDependencies": {
     "mv": "^2.1.1"
-  },
-  "packageManager": "yarn@3.2.1"
+  }
 }
