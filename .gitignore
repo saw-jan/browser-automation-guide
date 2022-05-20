@@ -1,3 +1,5 @@
 node_modules
 browsers/chrome
 package-lock.json
+.yarn/*
+!.yarn/releases
