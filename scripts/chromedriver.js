@@ -51,7 +51,7 @@ let sessionId = null
     /**
      * navigate to url
      */
-    await navigateTo('https://jankaritech.com')
+    await goto('https://jankaritech.com')
 
     /**
      * get page title
@@ -127,7 +127,7 @@ async function createSession() {
   return Promise.resolve()
 }
 
-async function navigateTo(url) {
+async function goto(url) {
   return fetch({
     method: 'POST',
     url: `/${sessionId}/url`,

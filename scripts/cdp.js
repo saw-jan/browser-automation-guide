@@ -37,11 +37,8 @@ let browser = null
 ;(async function () {
   const page = await connect()
 
-  await page.navigate('https://jankaritech.com').then((res) => {
-    console.log(res)
-    page.status(res.id)
-  })
-  await page.status().then((res) => console.log(res))
+  await page.goto('https://jankaritech.com')
+
   // close session
   setTimeout(async () => await page.close(), 10000)
 })()
@@ -51,12 +48,8 @@ let browser = null
  * Command APIs
  * ---------------------------------------------------
  */
-function navigate(sessionId, url) {
+function goto(sessionId, url) {
   return send({ sessionId, method: 'Page.navigate', params: { url } })
-}
-
-function status(sessionId, frameId) {
-  return send({ sessionId, method: 'Page.frameNavigated', params: { frameId } })
 }
 
 async function close() {
@@ -103,8 +96,7 @@ async function connect() {
       const sessionId = await getSessionId()
 
       const page = {
-        navigate: (url) => navigate(sessionId, url),
-        status: (frameId) => status(sessionId, frameId),
+        goto: (url) => goto(sessionId, url),
         close,
       }
 
@@ -137,7 +129,7 @@ async function getSessionId() {
       flatten: true,
     },
   }).then(function (res) {
-    sessionId = res.params.sessionId
+    sessionId = res.result.sessionId
   })
 
   return sessionId
@@ -151,11 +143,13 @@ function send(command) {
       ...command,
     }
 
-    // console.log(command)
     ws.send(JSON.stringify(command))
 
     ws.on('message', function (data) {
-      resolve(JSON.parse(data.toString('utf-8')))
+      const message = JSON.parse(data.toString('utf-8'))
+      if (message.id && id === message.id) {
+        resolve(message)
+      }
     })
 
     ws.on('error', function (err) {
