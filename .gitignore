@@ -1,5 +1,6 @@
 node_modules
 browsers/chrome
+browsers/data
 package-lock.json
 .yarn/*
 !.yarn/releases
