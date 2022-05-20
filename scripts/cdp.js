@@ -5,6 +5,7 @@ const { spawn } = require('child_process')
 const axios = require('axios')
 const { WebSocket } = require('ws')
 const fs = require('fs')
+const path = require('path')
 
 const CHROME_EXECUTABLE_PATH = path.join(
   path.dirname(__dirname),
