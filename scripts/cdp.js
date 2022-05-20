@@ -6,6 +6,7 @@ const axios = require('axios')
 const { WebSocket } = require('ws')
 const fs = require('fs')
 const path = require('path')
+const assert = require('assert')
 
 const CHROME_EXECUTABLE_PATH = path.join(
   path.dirname(__dirname),
@@ -35,12 +36,28 @@ let browser = null
  * ---------------------------------------------------
  */
 ;(async function () {
-  const page = await connect()
+  let page = null
+  let PASSED = false
+  try {
+    page = await createSession()
 
-  await page.goto('https://jankaritech.com')
+    await page.goto('https://jankaritech.com')
 
-  // close session
-  setTimeout(async () => await page.close(), 10000)
+    const title = await page.getTitle()
+
+    assert.strictEqual(title, 'JankariTech')
+    PASSED = true
+  } catch (e) {
+    console.log(e)
+  } finally {
+    await page.close()
+
+    if (PASSED) {
+      console.info('[OK] Tests passed!')
+    } else {
+      console.error('[FAILED] Tests failed!')
+    }
+  }
 })()
 
 /**
@@ -50,6 +67,28 @@ let browser = null
  */
 function goto(sessionId, url) {
   return send({ sessionId, method: 'Page.navigate', params: { url } })
+}
+
+async function getTitle(sessionId) {
+  const {
+    result: {
+      root: { nodeId },
+    },
+  } = await send({ sessionId, method: 'DOM.getDocument' })
+  const titleNode = await send({
+    sessionId,
+    method: 'DOM.querySelector',
+    params: { nodeId, selector: 'title' },
+  })
+  const {
+    result: { outerHTML },
+  } = await send({
+    sessionId,
+    method: 'DOM.getOuterHTML',
+    params: { nodeId: titleNode.result.nodeId },
+  })
+  const title = outerHTML.replace('<title>', '').replace('</title>', '')
+  return title
 }
 
 async function close() {
@@ -70,7 +109,7 @@ async function close() {
  * ---------------------------------------------------
  */
 
-async function connect() {
+async function createSession() {
   startDebugServer()
 
   let ready = false
@@ -97,6 +136,7 @@ async function connect() {
 
       const page = {
         goto: (url) => goto(sessionId, url),
+        getTitle: () => getTitle(sessionId),
         close,
       }
 
