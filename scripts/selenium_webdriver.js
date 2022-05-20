@@ -5,13 +5,13 @@ const { Builder, until } = require('selenium-webdriver')
 const chrome = require('selenium-webdriver/chrome')
 const path = require('path')
 
-const chromeDriver = path.join(
+const CHROME_DRIVER_PATH = path.join(
   path.dirname(__dirname),
   'drivers',
   'chromedriver'
 )
 
-const chromeExecutable = path.join(
+const CHROME_EXECUTABLE_PATH = path.join(
   path.dirname(__dirname),
   'browsers',
   'chrome',
@@ -20,7 +20,9 @@ const chromeExecutable = path.join(
 
 ;(async function () {
   // chromedriver service
-  const service = new chrome.ServiceBuilder(chromeDriver).setPort(4444).build()
+  const service = new chrome.ServiceBuilder(CHROME_DRIVER_PATH)
+    .setPort(4444)
+    .build()
 
   chrome.setDefaultService(service)
 
@@ -32,7 +34,7 @@ const chromeExecutable = path.join(
   let driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(
-      new chrome.Options().setChromeBinaryPath(chromeExecutable)
+      new chrome.Options().setChromeBinaryPath(CHROME_EXECUTABLE_PATH)
     )
     .build()
 

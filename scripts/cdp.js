@@ -78,10 +78,7 @@ async function close() {
  */
 
 async function connect() {
-  // start browser in debug mode
-  browser = spawn(CHROME_EXECUTABLE_PATH, CHROME_ARGS, {
-    detached: true,
-  })
+  startDebugServer()
 
   let ready = false
   let wsServerUrl = ''
@@ -113,6 +110,13 @@ async function connect() {
 
       resolve(page)
     })
+  })
+}
+
+function startDebugServer() {
+  // start browser in debug mode
+  browser = spawn(CHROME_EXECUTABLE_PATH, CHROME_ARGS, {
+    detached: true,
   })
 }
 
