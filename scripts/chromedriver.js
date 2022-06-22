@@ -164,5 +164,7 @@ async function closeSession() {
   })
 
   // close chromedriver server
-  process.kill(-wdServer.pid)
+  if (!wdServer.killed) {
+    process.kill(-wdServer.pid)
+  }
 }
