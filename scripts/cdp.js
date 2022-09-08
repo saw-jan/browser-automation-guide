@@ -15,7 +15,7 @@ const CHROME_EXECUTABLE_PATH = path.join(
   'chrome'
 )
 const HOST = 'localhost'
-const PORT = 9222
+const PORT = 4444
 const USER_DIR = path.join(
   path.dirname(__dirname),
   'browsers',
@@ -124,7 +124,7 @@ async function createSession() {
         ready = true
       })
       .catch((err) => {
-        //
+        // console.log(err)
       })
   }
 

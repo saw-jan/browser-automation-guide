@@ -37,12 +37,6 @@ let sessionId = null
   let PASSED = false
 
   try {
-    const USER_DIR = path.join(
-      path.dirname(__dirname),
-      'browsers',
-      'data',
-      'chrome'
-    )
     /**
      * create session
      */
