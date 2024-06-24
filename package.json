@@ -12,7 +12,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "selenium-webdriver": "^4.1.2",
-    "ws": "^8.6.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "mv": "^2.1.1"
